@@ -23,3 +23,36 @@
 .page p {
   color: #6b7280;
 }
+
+/* ── Shared page subtitle ── */
+.page-subtitle {
+  color: #6b7280;
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ── Shared loading / error state containers ── */
+.state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 0.75rem;
+}
+
+.state-message { font-size: 1rem; color: #6b7280; }
+.state-hint    { font-size: 0.85rem; color: #9ca3af; }
+.error-state .state-message { color: #dc2626; }
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #4f46e5;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }

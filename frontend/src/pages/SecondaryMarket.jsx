@@ -1,21 +1,10 @@
 // Secondary Market page — fetches GET /secondary-market and renders buyable fund listings
 import { useState, useEffect } from "react";
 import "./SecondaryMarket.css";
+import { ASSET_CLASS_COLOURS, formatEur } from "../utils";
 
 const API_BASE = "http://localhost:8000";
 const API_KEY  = "pvr-key-alphawealth-001";
-
-const ASSET_CLASS_COLOURS = {
-  "Infrastructure":  { bg: "#dbeafe", text: "#1d4ed8" },
-  "Private Credit":  { bg: "#fef3c7", text: "#b45309" },
-  "Real Estate":     { bg: "#ede9fe", text: "#6d28d9" },
-  "Private Equity":  { bg: "#fce7f3", text: "#be185d" },
-  "Natural Capital": { bg: "#dcfce7", text: "#15803d" },
-};
-
-function formatEur(n) {
-  return "€" + Number(n).toLocaleString("en-EU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
 
 // Confirmation modal shown when the user clicks Buy
 function BuyModal({ listing, onConfirm, onCancel }) {
@@ -147,6 +136,7 @@ function ListingCard({ listing, onBuy }) {
   );
 }
 
+// Fetches available secondary listings and manages the buy modal and toast flow
 function SecondaryMarket() {
   const [listings, setListings]   = useState([]);
   const [loading, setLoading]     = useState(true);
@@ -165,10 +155,12 @@ function SecondaryMarket() {
       .catch((err) => { setError(err.message); setLoading(false); });
   }, []);
 
+  // Opens the purchase confirmation modal for a listing
   function handleBuyClick(listing) {
     setModalListing(listing);
   }
 
+  // Removes the purchased listing from state and shows the success toast
   function handleConfirm(listing) {
     setModalListing(null);
     setToast(listing);

@@ -4,12 +4,6 @@
   margin-bottom: 1.75rem;
 }
 
-.page-subtitle {
-  color: #6b7280;
-  margin-top: 0.25rem;
-  font-size: 0.95rem;
-}
-
 /* Two-column layout: form left, result right */
 .onboarding-layout {
   display: grid;

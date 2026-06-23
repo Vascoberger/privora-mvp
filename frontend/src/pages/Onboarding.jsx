@@ -13,11 +13,7 @@ const INITIAL_FORM = {
   risk_profile:  "conservative",
 };
 
-// Formats a number as EUR with thousands separator
-function formatEur(n) {
-  return "€" + Number(n).toLocaleString("en-EU");
-}
-
+// Displays ELTIF eligibility result, investor ID, and cap warning if applicable
 function ResultPanel({ result, onReset }) {
   const pass = result.status === "pass";
 
@@ -68,16 +64,19 @@ function ResultPanel({ result, onReset }) {
   );
 }
 
+// KYC form paired with a right-column ELTIF 2.0 eligibility result panel
 function Onboarding() {
   const [form, setForm]       = useState(INITIAL_FORM);
   const [loading, setLoading] = useState(false);
   const [result, setResult]   = useState(null);
   const [error, setError]     = useState(null);
 
+  // Updates the corresponding form field in state
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
+  // Submits KYC data to /onboard and stores the eligibility result
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
@@ -110,6 +109,7 @@ function Onboarding() {
     }
   }
 
+  // Clears result and resets form to initial values
   function handleReset() {
     setResult(null);
     setError(null);

@@ -1,6 +1,7 @@
 // Portfolio Dashboard — fetches GET /portfolio/{investor_id} and displays holdings + cash yield
 import { useState } from "react";
 import "./Portfolio.css";
+import { formatEurInt } from "../utils";
 
 const API_BASE = "http://localhost:8000";
 const API_KEY  = "pvr-key-alphawealth-001";
@@ -15,10 +16,6 @@ const STATUS_STYLES = {
   pending: { bg: "#fef3c7", text: "#b45309", label: "Pending" },
   exited:  { bg: "#f3f4f6", text: "#6b7280", label: "Exited"  },
 };
-
-function formatEur(n) {
-  return "€" + Number(n).toLocaleString("en-EU", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-}
 
 function pct(part, total) {
   return total > 0 ? ((part / total) * 100).toFixed(1) : "0.0";
@@ -68,13 +65,13 @@ function SummaryCards({ data }) {
     <div className="summary-cards">
       <div className="summary-card">
         <span className="summary-label">Total Invested</span>
-        <span className="summary-value">{formatEur(data.total_invested)}</span>
+        <span className="summary-value">{formatEurInt(data.total_invested)}</span>
       </div>
       <div className="summary-card">
         <span className="summary-label">Current Value</span>
-        <span className="summary-value">{formatEur(totalCurrentValue)}</span>
+        <span className="summary-value">{formatEurInt(totalCurrentValue)}</span>
         <span className={`summary-gain ${gainPositive ? "gain-pos" : "gain-neg"}`}>
-          {gainPositive ? "+" : ""}{formatEur(totalGain)}
+          {gainPositive ? "+" : ""}{formatEurInt(totalGain)}
         </span>
       </div>
       <div className="summary-card">
@@ -83,10 +80,10 @@ function SummaryCards({ data }) {
       </div>
       <div className="summary-card summary-card-cash">
         <span className="summary-label">Cash Pending Deployment</span>
-        <span className="summary-value">{formatEur(data.cash_pending_deployment)}</span>
+        <span className="summary-value">{formatEurInt(data.cash_pending_deployment)}</span>
         <span className="summary-yield">
           Earning {data.estimated_interest_yield_pct}% p.a. ·{" "}
-          {formatEur(data.estimated_interest_yield_amount)}/yr
+          {formatEurInt(data.estimated_interest_yield_amount)}/yr
         </span>
       </div>
     </div>
@@ -124,11 +121,11 @@ function PositionRow({ pos, index, totalInvested }) {
         <div className="pos-numbers">
           <span className="pos-stat">
             <span className="pos-stat-label">Invested</span>
-            <span className="pos-stat-value">{formatEur(pos.amount_invested)}</span>
+            <span className="pos-stat-value">{formatEurInt(pos.amount_invested)}</span>
           </span>
           <span className="pos-stat">
             <span className="pos-stat-label">Current Value</span>
-            <span className="pos-stat-value">{formatEur(pos.current_value)}</span>
+            <span className="pos-stat-value">{formatEurInt(pos.current_value)}</span>
           </span>
           <span className="pos-stat">
             <span className="pos-stat-label">Allocation</span>
@@ -137,7 +134,7 @@ function PositionRow({ pos, index, totalInvested }) {
           <span className="pos-stat">
             <span className="pos-stat-label">Unrealised</span>
             <span className={`pos-stat-value ${gainPos ? "gain-pos" : "gain-neg"}`}>
-              {gainPos ? "+" : ""}{formatEur(gain)}
+              {gainPos ? "+" : ""}{formatEurInt(gain)}
             </span>
           </span>
         </div>
@@ -146,12 +143,14 @@ function PositionRow({ pos, index, totalInvested }) {
   );
 }
 
+// Investor ID lookup with summary cards, allocation bar, and position list
 function Portfolio() {
   const [investorId, setInvestorId] = useState("inv_demo001");
   const [portfolio, setPortfolio]   = useState(null);
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState(null);
 
+  // Fetches portfolio data for the entered investor ID from /portfolio/{id}
   async function loadPortfolio(e) {
     e.preventDefault();
     if (!investorId.trim()) return;
@@ -210,9 +209,9 @@ function Portfolio() {
 
       {/* Error */}
       {error && (
-        <div className="portfolio-error">
-          <strong>⚠ Could not load portfolio</strong>
-          <p>{error}</p>
+        <div className="state-container error-state">
+          <p className="state-message">⚠ Could not load portfolio: {error}</p>
+          <p className="state-hint">Make sure the Privora API is running on port 8000.</p>
         </div>
       )}
 
@@ -251,9 +250,9 @@ function Portfolio() {
               </span>
             </div>
             <div className="cash-callout-right">
-              <span className="cash-amount">{formatEur(portfolio.cash_pending_deployment)}</span>
+              <span className="cash-amount">{formatEurInt(portfolio.cash_pending_deployment)}</span>
               <span className="cash-yield">
-                {portfolio.estimated_interest_yield_pct}% p.a. · {formatEur(portfolio.estimated_interest_yield_amount)}/yr
+                {portfolio.estimated_interest_yield_pct}% p.a. · {formatEurInt(portfolio.estimated_interest_yield_amount)}/yr
               </span>
             </div>
           </div>

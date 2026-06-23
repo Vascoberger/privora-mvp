@@ -1,13 +1,10 @@
 // Investment Flow page — fund selector, live fee calculator, and POST /invest confirmation
 import { useState, useEffect } from "react";
 import "./Invest.css";
+import { formatEur, formatEurInt } from "../utils";
 
 const API_BASE = "http://localhost:8000";
 const API_KEY  = "pvr-key-alphawealth-001";
-
-function formatEur(n) {
-  return "€" + Number(n).toLocaleString("en-EU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
 
 // Computes all fee lines from a fund object and a raw amount
 function calcFees(fund, amount) {
@@ -36,7 +33,7 @@ function FeeCalculator({ fund, amount, onConfirm, submitting }) {
         <span className="calc-fund-label">Selected Fund</span>
         <span className="calc-fund-name">{fund.name}</span>
         <span className="calc-fund-meta">
-          {fund.asset_class} · Min. {formatEur(fund.minimum_investment)}
+          {fund.asset_class} · Min. {formatEurInt(fund.minimum_investment)}
         </span>
       </div>
 
@@ -95,7 +92,7 @@ function FeeCalculator({ fund, amount, onConfirm, submitting }) {
 
       {belowMin && (
         <p className="calc-min-warning">
-          ⚠ Minimum investment for this fund is {formatEur(fund.minimum_investment)}.
+          ⚠ Minimum investment for this fund is {formatEurInt(fund.minimum_investment)}.
         </p>
       )}
 
@@ -157,6 +154,7 @@ function OrderConfirmation({ order, fund, onReset }) {
   );
 }
 
+// Fund selector, amount input, live fee calculator, and subscription confirmation
 function Invest() {
   const [funds, setFunds]           = useState([]);
   const [fundsLoading, setFundsLoading] = useState(true);
@@ -181,6 +179,7 @@ function Invest() {
   const selectedFund = funds.find((f) => f.id === selectedFundId) ?? null;
   const showCalculator = selectedFund !== null && order === null;
 
+  // Submits the subscription order to /invest and stores the confirmed order
   async function handleConfirm() {
     setSubmitting(true);
     setSubmitError(null);
@@ -204,6 +203,7 @@ function Invest() {
     }
   }
 
+  // Resets form fields and clears the confirmed order
   function handleReset() {
     setOrder(null);
     setSubmitError(null);
@@ -284,7 +284,7 @@ function Invest() {
               </div>
               {selectedFund && (
                 <span className="field-hint">
-                  Minimum for this fund: {formatEur(selectedFund.minimum_investment)}
+                  Minimum for this fund: {formatEurInt(selectedFund.minimum_investment)}
                 </span>
               )}
             </div>

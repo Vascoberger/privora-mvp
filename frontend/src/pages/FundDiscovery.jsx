@@ -1,24 +1,12 @@
 // Fund Discovery page — fetches GET /funds and renders filterable fund cards
 import { useState, useEffect } from "react";
 import "./FundDiscovery.css";
+import { ASSET_CLASS_COLOURS, formatEurInt } from "../utils";
 
 const API_BASE = "http://localhost:8000";
 const API_KEY = "pvr-key-alphawealth-001";
 
-// Asset class accent colours for the category badge
-const ASSET_CLASS_COLOURS = {
-  "Infrastructure":  { bg: "#dbeafe", text: "#1d4ed8" },
-  "Private Credit":  { bg: "#fef3c7", text: "#b45309" },
-  "Real Estate":     { bg: "#ede9fe", text: "#6d28d9" },
-  "Private Equity":  { bg: "#fce7f3", text: "#be185d" },
-  "Natural Capital": { bg: "#dcfce7", text: "#15803d" },
-};
-
-// Format a number as EUR (e.g. 10000 → "€10,000")
-function formatEur(n) {
-  return "€" + n.toLocaleString("en-EU");
-}
-
+// Individual fund card showing name, asset class badge, stats, and ELTIF eligibility
 function FundCard({ fund }) {
   const accent = ASSET_CLASS_COLOURS[fund.asset_class] || { bg: "#f3f4f6", text: "#374151" };
 
@@ -47,7 +35,7 @@ function FundCard({ fund }) {
         </div>
         <div className="stat">
           <span className="stat-label">Min. Investment</span>
-          <span className="stat-value">{formatEur(fund.minimum_investment)}</span>
+          <span className="stat-value">{formatEurInt(fund.minimum_investment)}</span>
         </div>
         <div className="stat">
           <span className="stat-label">Annual Fee</span>
@@ -62,6 +50,7 @@ function FundCard({ fund }) {
   );
 }
 
+// Main page: fetches all funds and renders a filterable card grid
 function FundDiscovery() {
   const [funds, setFunds] = useState([]);
   const [loading, setLoading] = useState(true);

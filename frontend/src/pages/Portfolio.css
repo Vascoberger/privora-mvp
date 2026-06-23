@@ -4,12 +4,6 @@
   margin-bottom: 1.5rem;
 }
 
-.page-subtitle {
-  color: #6b7280;
-  margin-top: 0.25rem;
-  font-size: 0.95rem;
-}
-
 /* ── Lookup bar ── */
 .lookup-bar {
   display: flex;
@@ -69,42 +63,6 @@
   font-size: 0.78rem;
   color: #9ca3af;
 }
-
-/* ── Loading / error states ── */
-.state-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 3rem 2rem;
-  gap: 0.75rem;
-}
-
-.state-message { font-size: 1rem; color: #6b7280; }
-
-.portfolio-error {
-  background: #fef2f2;
-  border: 1px solid #fca5a5;
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
-  color: #991b1b;
-  font-size: 0.9rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.portfolio-error p { margin: 0; }
-
-.spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid #e5e7eb;
-  border-top-color: #4f46e5;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Portfolio content ── */
 .portfolio-content {

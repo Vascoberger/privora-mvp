@@ -11,9 +11,18 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Literal, Optional
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 # Absolute path to the mock data directory so imports work regardless of cwd
 MOCK_DATA_DIR = Path(__file__).parent / "mock_data"
+
+# API key registry loaded once at import time — maps key → platform name
+_API_KEYS: dict[str, str] = json.loads((MOCK_DATA_DIR / "api_keys.json").read_text())
+
+# Routes that bypass API key authentication
+_EXEMPT_PATHS = {"/", "/docs", "/openapi.json", "/redoc"}
 
 
 def load_json(filename: str):
@@ -38,7 +47,56 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Allow the React dev server to call the API without CORS errors
+
+class APIKeyMiddleware(BaseHTTPMiddleware):
+    """
+    Enforces API key authentication on all non-exempt routes.
+
+    Simulates Privora's B2B access control: every wealth platform that integrates
+    the API receives a unique key tied to their platform name. Requests without a
+    valid key in the X-API-Key header are rejected with 401 before reaching any
+    endpoint. Exempt routes (/, /docs, /openapi.json, /redoc) remain public so
+    the Swagger UI and health check are accessible without credentials.
+    """
+
+    async def dispatch(self, request: Request, call_next):
+        if request.url.path in _EXEMPT_PATHS:
+            return await call_next(request)
+
+        api_key = request.headers.get("X-API-Key")
+
+        if not api_key:
+            return JSONResponse(
+                status_code=401,
+                content={
+                    "detail": (
+                        "Missing API key. Include your key in the X-API-Key request header. "
+                        "Contact Privora to obtain a key for your platform."
+                    )
+                },
+            )
+
+        platform = _API_KEYS.get(api_key)
+        if platform is None:
+            return JSONResponse(
+                status_code=401,
+                content={
+                    "detail": (
+                        f"Unrecognised API key. "
+                        f"Contact Privora to verify your credentials."
+                    )
+                },
+            )
+
+        # Attach the authenticated platform name to request state for downstream use
+        request.state.platform = platform
+        return await call_next(request)
+
+
+# Middleware is applied in reverse registration order (last added = outermost).
+# CORSMiddleware is added last so it runs first, ensuring CORS headers are
+# present even on 401 responses and OPTIONS preflight requests pass through.
+app.add_middleware(APIKeyMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://localhost:3000"],

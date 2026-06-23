@@ -1,0 +1,67 @@
+[
+  {
+    "listing_id": "sec_001",
+    "seller_id": "inv_demo003",
+    "fund_id": "fund_001",
+    "fund_name": "Privora European Infrastructure Fund I",
+    "asset_class": "Infrastructure",
+    "original_investment": 20000,
+    "asking_price": 19400,
+    "discount_pct": 3.0,
+    "commission_pct": 1.5,
+    "commission_amount": 291.0,
+    "status": "available"
+  },
+  {
+    "listing_id": "sec_002",
+    "seller_id": "inv_demo001",
+    "fund_id": "fund_003",
+    "fund_name": "Privora Real Estate Core Europe Fund",
+    "asset_class": "Real Estate",
+    "original_investment": 20000,
+    "asking_price": 19800,
+    "discount_pct": 1.0,
+    "commission_pct": 1.5,
+    "commission_amount": 297.0,
+    "status": "available"
+  },
+  {
+    "listing_id": "sec_003",
+    "seller_id": "inv_demo002",
+    "fund_id": "fund_005",
+    "fund_name": "Privora Sustainable Forestry & Agriculture Fund",
+    "asset_class": "Natural Capital",
+    "original_investment": 10000,
+    "asking_price": 10300,
+    "discount_pct": 0.0,
+    "commission_pct": 1.5,
+    "commission_amount": 154.5,
+    "status": "available"
+  },
+  {
+    "listing_id": "sec_004",
+    "seller_id": "inv_demo001",
+    "fund_id": "fund_002",
+    "fund_name": "Privora Private Credit Opportunities Fund",
+    "asset_class": "Private Credit",
+    "original_investment": 15000,
+    "asking_price": 14250,
+    "discount_pct": 5.0,
+    "commission_pct": 1.5,
+    "commission_amount": 213.75,
+    "status": "available"
+  },
+  {
+    "listing_id": "sec_005",
+    "seller_id": "inv_demo003",
+    "fund_id": "fund_004",
+    "fund_name": "Privora Growth Equity Fund II",
+    "asset_class": "Private Equity",
+    "original_investment": 25000,
+    "asking_price": 27500,
+    "discount_pct": 0.0,
+    "commission_pct": 1.5,
+    "commission_amount": 412.5,
+    "status": "sold"
+  }
+]

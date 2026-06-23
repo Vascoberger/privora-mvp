@@ -108,6 +108,21 @@ class Portfolio(BaseModel):
     estimated_interest_yield_amount: float  # EUR amount earned on cash per year
 
 
+class SecondaryListing(BaseModel):
+    """A fund position listed for sale on the Privora secondary market."""
+    listing_id: str
+    seller_id: str
+    fund_id: str
+    fund_name: str
+    asset_class: str
+    original_investment: float
+    asking_price: float
+    discount_pct: float       # negative = premium; 0.0 means at par
+    commission_pct: float     # Privora secondary market commission rate
+    commission_amount: float  # commission in EUR charged to the buyer at settlement
+    status: Literal["available", "sold"]
+
+
 class OnboardRequest(BaseModel):
     """Investor details submitted for KYC and ELTIF 2.0 suitability assessment."""
     name: str = Field(..., description="Full legal name of the investor")
@@ -314,6 +329,28 @@ def get_portfolio(investor_id: str):
         )
 
     return portfolio
+
+
+@app.get("/secondary-market", response_model=list[SecondaryListing], tags=["Secondary Market"])
+def get_secondary_market():
+    """
+    Returns all listings currently available on the Privora secondary market.
+
+    The secondary market allows existing ELTIF investors to exit their positions
+    before the fund's maturity date by selling to other eligible investors.
+    Privora charges a commission on each transaction, which is the fourth revenue
+    lever in the business model and is surfaced explicitly in every listing.
+
+    Only listings with status='available' are returned — sold positions are
+    filtered out so the frontend shows a live, actionable order book. The
+    commission_amount field is pre-calculated so the buyer UI can display the
+    all-in cost (asking_price + commission_amount) without additional arithmetic.
+
+    Returns:
+        List of SecondaryListing objects with status 'available'.
+    """
+    listings = load_json("secondary_market.json")
+    return [l for l in listings if l["status"] == "available"]
 
 
 @app.get("/funds", response_model=list[Fund], tags=["Funds"])

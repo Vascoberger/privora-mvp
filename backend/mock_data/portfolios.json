@@ -1,0 +1,95 @@
+[
+  {
+    "investor_id": "inv_demo001",
+    "name": "Sophie Hartmann",
+    "total_invested": 85000,
+    "positions": [
+      {
+        "fund_id": "fund_001",
+        "fund_name": "Privora European Infrastructure Fund I",
+        "amount_invested": 40000,
+        "current_value": 42300,
+        "status": "active"
+      },
+      {
+        "fund_id": "fund_002",
+        "fund_name": "Privora Private Credit Opportunities Fund",
+        "amount_invested": 25000,
+        "current_value": 26150,
+        "status": "active"
+      },
+      {
+        "fund_id": "fund_003",
+        "fund_name": "Privora Real Estate Core Europe Fund",
+        "amount_invested": 20000,
+        "current_value": 19800,
+        "status": "active"
+      }
+    ],
+    "cash_pending_deployment": 15000,
+    "estimated_interest_yield_pct": 4.2,
+    "estimated_interest_yield_amount": 630
+  },
+  {
+    "investor_id": "inv_demo002",
+    "name": "Marco van den Berg",
+    "total_invested": 50000,
+    "positions": [
+      {
+        "fund_id": "fund_004",
+        "fund_name": "Privora Growth Equity Fund II",
+        "amount_invested": 25000,
+        "current_value": 27500,
+        "status": "active"
+      },
+      {
+        "fund_id": "fund_005",
+        "fund_name": "Privora Sustainable Forestry & Agriculture Fund",
+        "amount_invested": 25000,
+        "current_value": 25800,
+        "status": "active"
+      }
+    ],
+    "cash_pending_deployment": 30000,
+    "estimated_interest_yield_pct": 4.2,
+    "estimated_interest_yield_amount": 1260
+  },
+  {
+    "investor_id": "inv_demo003",
+    "name": "Isabelle Fontaine",
+    "total_invested": 120000,
+    "positions": [
+      {
+        "fund_id": "fund_001",
+        "fund_name": "Privora European Infrastructure Fund I",
+        "amount_invested": 50000,
+        "current_value": 53500,
+        "status": "active"
+      },
+      {
+        "fund_id": "fund_002",
+        "fund_name": "Privora Private Credit Opportunities Fund",
+        "amount_invested": 30000,
+        "current_value": 31900,
+        "status": "active"
+      },
+      {
+        "fund_id": "fund_004",
+        "fund_name": "Privora Growth Equity Fund II",
+        "amount_invested": 25000,
+        "current_value": 26200,
+        "status": "active"
+      },
+      {
+        "fund_id": "fund_003",
+        "fund_name": "Privora Real Estate Core Europe Fund",
+        "amount_invested": 15000,
+        "current_value": 14600,
+        "status": "pending"
+      }
+    ],
+    "cash_pending_deployment": 5000,
+    "estimated_interest_yield_pct": 4.2,
+    "estimated_interest_yield_amount": 210
+  }
+]

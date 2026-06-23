@@ -88,6 +88,26 @@ class InvestResponse(BaseModel):
     status: Literal["confirmed", "rejected"]
 
 
+class Position(BaseModel):
+    """A single fund holding within an investor's portfolio."""
+    fund_id: str
+    fund_name: str
+    amount_invested: float
+    current_value: float
+    status: Literal["active", "pending", "exited"]
+
+
+class Portfolio(BaseModel):
+    """Full portfolio view for an investor, including positions and cash."""
+    investor_id: str
+    name: str
+    total_invested: float
+    positions: list[Position]
+    cash_pending_deployment: float      # cash not yet deployed into a fund
+    estimated_interest_yield_pct: float  # annualised yield earned on idle cash
+    estimated_interest_yield_amount: float  # EUR amount earned on cash per year
+
+
 class OnboardRequest(BaseModel):
     """Investor details submitted for KYC and ELTIF 2.0 suitability assessment."""
     name: str = Field(..., description="Full legal name of the investor")
@@ -252,6 +272,48 @@ def invest(request: InvestRequest):
         net_estimated_return=net_return,
         status="confirmed",
     )
+
+
+@app.get("/portfolio/{investor_id}", response_model=Portfolio, tags=["Portfolio"])
+def get_portfolio(investor_id: str):
+    """
+    Returns the current portfolio for a given investor, including all fund positions
+    and cash pending deployment.
+
+    The response is designed to power the Portfolio Dashboard page and surfaces two
+    Privora revenue levers that are not visible in the investment flow:
+
+      - Cash pending deployment : idle capital awaiting allocation into a fund.
+        Privora earns an interest spread on this float; the estimated yield is
+        returned so the wealth platform can show the client what their cash is earning
+        in the interim.
+      - Position current_value  : mark-to-model NAV, allowing the dashboard to display
+        unrealised gains/losses per position.
+
+    The status field on each position distinguishes active holdings from pending
+    subscriptions (still in the settlement window) and exited positions.
+
+    Args:
+        investor_id: The ID issued by POST /onboard. Use 'inv_demo001', 'inv_demo002',
+                     or 'inv_demo003' to explore sample portfolios.
+
+    Returns:
+        Portfolio object with positions list and cash yield details.
+
+    Raises:
+        404 if the investor_id is not found in the mock registry.
+    """
+    portfolios = load_json("portfolios.json")
+    portfolio = next((p for p in portfolios if p["investor_id"] == investor_id), None)
+
+    if portfolio is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Investor '{investor_id}' not found. "
+                   f"Demo IDs: inv_demo001, inv_demo002, inv_demo003."
+        )
+
+    return portfolio
 
 
 @app.get("/funds", response_model=list[Fund], tags=["Funds"])

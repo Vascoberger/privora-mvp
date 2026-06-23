@@ -1,0 +1,57 @@
+[
+  {
+    "id": "fund_001",
+    "name": "Privora European Infrastructure Fund I",
+    "asset_class": "Infrastructure",
+    "minimum_investment": 10000,
+    "expected_return": 8.5,
+    "annual_fee": 1.75,
+    "placement_fee": 2.0,
+    "eltif_eligible": true,
+    "description": "A diversified portfolio of European infrastructure assets including renewable energy, digital infrastructure, and transport. Targets stable, inflation-linked cash flows over a 10-year horizon under ELTIF 2.0 regulations."
+  },
+  {
+    "id": "fund_002",
+    "name": "Privora Private Credit Opportunities Fund",
+    "asset_class": "Private Credit",
+    "minimum_investment": 5000,
+    "expected_return": 9.2,
+    "annual_fee": 1.50,
+    "placement_fee": 1.5,
+    "eltif_eligible": true,
+    "description": "Senior secured direct lending to mid-market European companies. Floating rate exposure provides natural inflation hedging with quarterly income distributions and a 7-year fund life."
+  },
+  {
+    "id": "fund_003",
+    "name": "Privora Real Estate Core Europe Fund",
+    "asset_class": "Real Estate",
+    "minimum_investment": 10000,
+    "expected_return": 7.0,
+    "annual_fee": 1.80,
+    "placement_fee": 2.5,
+    "eltif_eligible": true,
+    "description": "Core and core-plus real estate across office, logistics, and residential sectors in Western Europe. Low volatility income strategy targeting capital preservation and steady distributions."
+  },
+  {
+    "id": "fund_004",
+    "name": "Privora Growth Equity Fund II",
+    "asset_class": "Private Equity",
+    "minimum_investment": 25000,
+    "expected_return": 14.0,
+    "annual_fee": 2.00,
+    "placement_fee": 3.0,
+    "eltif_eligible": true,
+    "description": "Growth equity investments in European technology and healthcare companies at Series B to pre-IPO stages. Higher return potential with a 10-year lock-up, qualifying under ELTIF 2.0 for retail distribution."
+  },
+  {
+    "id": "fund_005",
+    "name": "Privora Sustainable Forestry & Agriculture Fund",
+    "asset_class": "Natural Capital",
+    "minimum_investment": 10000,
+    "expected_return": 6.5,
+    "annual_fee": 1.25,
+    "placement_fee": 1.0,
+    "eltif_eligible": true,
+    "description": "Long-duration natural capital strategy investing in certified sustainable forestry and agricultural land across Northern and Central Europe. Low correlation to public markets with tangible ESG impact credentials."
+  }
+]

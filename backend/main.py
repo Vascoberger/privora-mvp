@@ -65,6 +65,29 @@ class Fund(BaseModel):
     description: str
 
 
+class InvestRequest(BaseModel):
+    """Subscription order submitted by an onboarded investor."""
+    investor_id: str = Field(..., description="Investor ID returned by POST /onboard")
+    fund_id: str = Field(..., description="Fund ID from GET /funds")
+    amount: float = Field(..., gt=0, description="Gross subscription amount in EUR")
+
+
+class InvestResponse(BaseModel):
+    """Full fee breakdown and confirmation for a subscription order."""
+    order_id: str
+    investor_id: str
+    fund_id: str
+    amount_invested: float          # gross subscription amount
+    management_fee_pct: float       # annual management fee %
+    management_fee_amount: float    # annual management fee in EUR
+    placement_fee_pct: float        # one-time placement fee %
+    placement_fee_amount: float     # one-time placement fee in EUR
+    estimated_annual_yield_pct: float   # fund's expected return %
+    estimated_annual_yield_amount: float  # expected return in EUR per year
+    net_estimated_return: float     # yield minus annual management fee, first year
+    status: Literal["confirmed", "rejected"]
+
+
 class OnboardRequest(BaseModel):
     """Investor details submitted for KYC and ELTIF 2.0 suitability assessment."""
     name: str = Field(..., description="Full legal name of the investor")
@@ -164,6 +187,70 @@ def onboard_investor(request: OnboardRequest):
         reason=reason,
         cap_applies=cap_applies,
         investor_id=f"inv_{uuid.uuid4().hex[:10]}",
+    )
+
+
+@app.post("/invest", response_model=InvestResponse, tags=["Investment"])
+def invest(request: InvestRequest):
+    """
+    Places a mock subscription order for an investor into an ELTIF 2.0 fund and
+    returns a full fee breakdown before committing the position.
+
+    The response surfaces all four Privora revenue levers so the wealth platform
+    can render a transparent fee calculator in their UI prior to final confirmation:
+
+      - Management fee  : recurring annual cost, deducted from fund NAV
+      - Placement fee   : one-time upfront cost charged at subscription
+      - Estimated yield : gross annual return based on the fund's expected return %
+      - Net return      : estimated yield minus the first-year management fee
+
+    The fund is looked up from mock data by fund_id; if the fund_id is not
+    recognised a 404 is returned so the frontend can surface a clear error.
+
+    Args:
+        request: investor_id, fund_id, and gross subscription amount in EUR.
+
+    Returns:
+        InvestResponse with order confirmation and complete fee breakdown.
+    """
+    funds = load_json("funds.json")
+    fund = next((f for f in funds if f["id"] == request.fund_id), None)
+
+    if fund is None:
+        raise HTTPException(status_code=404, detail=f"Fund '{request.fund_id}' not found.")
+
+    if request.amount < fund["minimum_investment"]:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Amount €{request.amount:,.0f} is below the minimum investment "
+                f"of €{fund['minimum_investment']:,.0f} for this fund."
+            ),
+        )
+
+    mgmt_fee_pct = fund["annual_fee"]
+    placement_fee_pct = fund["placement_fee"]
+    yield_pct = fund["expected_return"]
+
+    mgmt_fee_amount = round(request.amount * mgmt_fee_pct / 100, 2)
+    placement_fee_amount = round(request.amount * placement_fee_pct / 100, 2)
+    yield_amount = round(request.amount * yield_pct / 100, 2)
+    # Net return: gross yield less the annual management fee (first-year view)
+    net_return = round(yield_amount - mgmt_fee_amount, 2)
+
+    return InvestResponse(
+        order_id=f"ord_{uuid.uuid4().hex[:10]}",
+        investor_id=request.investor_id,
+        fund_id=request.fund_id,
+        amount_invested=request.amount,
+        management_fee_pct=mgmt_fee_pct,
+        management_fee_amount=mgmt_fee_amount,
+        placement_fee_pct=placement_fee_pct,
+        placement_fee_amount=placement_fee_amount,
+        estimated_annual_yield_pct=yield_pct,
+        estimated_annual_yield_amount=yield_amount,
+        net_estimated_return=net_return,
+        status="confirmed",
     )
 
 

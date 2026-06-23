@@ -1,9 +1,153 @@
-// Fund Discovery page — displays available ELTIF 2.0 private market funds from GET /funds
-function FundDiscovery() {
+// Fund Discovery page — fetches GET /funds and renders filterable fund cards
+import { useState, useEffect } from "react";
+import "./FundDiscovery.css";
+
+const API_BASE = "http://localhost:8000";
+const API_KEY = "pvr-key-alphawealth-001";
+
+// Asset class accent colours for the category badge
+const ASSET_CLASS_COLOURS = {
+  "Infrastructure":  { bg: "#dbeafe", text: "#1d4ed8" },
+  "Private Credit":  { bg: "#fef3c7", text: "#b45309" },
+  "Real Estate":     { bg: "#ede9fe", text: "#6d28d9" },
+  "Private Equity":  { bg: "#fce7f3", text: "#be185d" },
+  "Natural Capital": { bg: "#dcfce7", text: "#15803d" },
+};
+
+// Format a number as EUR (e.g. 10000 → "€10,000")
+function formatEur(n) {
+  return "€" + n.toLocaleString("en-EU");
+}
+
+function FundCard({ fund }) {
+  const accent = ASSET_CLASS_COLOURS[fund.asset_class] || { bg: "#f3f4f6", text: "#374151" };
+
   return (
-    <div className="page">
-      <h1>Fund Discovery</h1>
-      <p>Available ELTIF 2.0 private market funds will appear here.</p>
+    <div className="fund-card">
+      <div className="fund-card-header">
+        <div className="fund-card-badges">
+          <span
+            className="badge badge-asset-class"
+            style={{ backgroundColor: accent.bg, color: accent.text }}
+          >
+            {fund.asset_class}
+          </span>
+          {fund.eltif_eligible && (
+            <span className="badge badge-eltif">ELTIF 2.0 Eligible</span>
+          )}
+        </div>
+        <h2 className="fund-card-name">{fund.name}</h2>
+        <p className="fund-card-description">{fund.description}</p>
+      </div>
+
+      <div className="fund-card-stats">
+        <div className="stat stat-highlight">
+          <span className="stat-label">Expected Return</span>
+          <span className="stat-value stat-value-green">{fund.expected_return}%</span>
+        </div>
+        <div className="stat">
+          <span className="stat-label">Min. Investment</span>
+          <span className="stat-value">{formatEur(fund.minimum_investment)}</span>
+        </div>
+        <div className="stat">
+          <span className="stat-label">Annual Fee</span>
+          <span className="stat-value stat-value-muted">{fund.annual_fee}%</span>
+        </div>
+        <div className="stat">
+          <span className="stat-label">Placement Fee</span>
+          <span className="stat-value stat-value-muted">{fund.placement_fee}%</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FundDiscovery() {
+  const [funds, setFunds] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [filter, setFilter] = useState("All");
+
+  useEffect(() => {
+    fetch(`${API_BASE}/funds`, {
+      headers: { "X-API-Key": API_KEY },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`API returned ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        setFunds(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  // Derive unique asset classes from the fetched data for the filter dropdown
+  const assetClasses = ["All", ...new Set(funds.map((f) => f.asset_class))];
+  const visible = filter === "All" ? funds : funds.filter((f) => f.asset_class === filter);
+
+  return (
+    <div className="page fund-discovery">
+      <div className="page-header">
+        <div>
+          <h1>Fund Discovery</h1>
+          <p className="page-subtitle">
+            ELTIF 2.0-eligible private market funds available through Privora
+          </p>
+        </div>
+
+        {!loading && !error && (
+          <div className="filter-bar">
+            <label htmlFor="asset-class-filter" className="filter-label">
+              Asset Class
+            </label>
+            <select
+              id="asset-class-filter"
+              className="filter-select"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              {assetClasses.map((cls) => (
+                <option key={cls} value={cls}>
+                  {cls}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
+
+      {loading && (
+        <div className="state-container">
+          <div className="spinner" />
+          <p className="state-message">Loading funds…</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="state-container error-state">
+          <p className="state-message">⚠ Could not load funds: {error}</p>
+          <p className="state-hint">Make sure the Privora API is running on port 8000.</p>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
+          <p className="results-count">
+            {visible.length} fund{visible.length !== 1 ? "s" : ""}
+            {filter !== "All" ? ` in ${filter}` : ""}
+          </p>
+          <div className="fund-grid">
+            {visible.map((fund) => (
+              <FundCard key={fund.id} fund={fund} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

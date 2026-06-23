@@ -1,9 +1,255 @@
 // Onboarding page — KYC form + ELTIF 2.0 eligibility check via POST /onboard
-function Onboarding() {
+import { useState } from "react";
+import "./Onboarding.css";
+
+const API_BASE = "http://localhost:8000";
+const API_KEY  = "pvr-key-alphawealth-001";
+
+const INITIAL_FORM = {
+  name:          "",
+  investor_type: "retail",
+  annual_income: "",
+  net_worth:     "",
+  risk_profile:  "conservative",
+};
+
+// Formats a number as EUR with thousands separator
+function formatEur(n) {
+  return "€" + Number(n).toLocaleString("en-EU");
+}
+
+function ResultPanel({ result, onReset }) {
+  const pass = result.status === "pass";
+
   return (
-    <div className="page">
-      <h1>Investor Onboarding</h1>
-      <p>KYC form and ELTIF 2.0 eligibility check will appear here.</p>
+    <div className={`result-panel ${pass ? "result-pass" : "result-fail"}`}>
+      <div className="result-header">
+        <span className="result-icon">{pass ? "✓" : "✗"}</span>
+        <div>
+          <h2 className="result-title">
+            {pass ? "Eligibility Confirmed" : "Not Eligible"}
+          </h2>
+          <p className="result-subtitle">
+            ELTIF 2.0 Suitability Assessment
+          </p>
+        </div>
+      </div>
+
+      <p className="result-reason">{result.reason}</p>
+
+      {pass && (
+        <>
+          <div className="investor-id-box">
+            <span className="investor-id-label">Investor ID</span>
+            <span className="investor-id-value">{result.investor_id}</span>
+            <span className="investor-id-hint">
+              Use this ID when placing investments
+            </span>
+          </div>
+
+          {result.cap_applies && (
+            <div className="cap-warning">
+              <strong>10% Portfolio Cap Applies</strong>
+              <p>
+                Under ELTIF 2.0 (EU 2023/606), investors with a net worth below
+                €500,000 may not allocate more than 10% of their financial
+                portfolio to ELTIF funds. Ensure each subscription stays within
+                this limit.
+              </p>
+            </div>
+          )}
+        </>
+      )}
+
+      <button className="btn-secondary" onClick={onReset}>
+        Run Another Check
+      </button>
+    </div>
+  );
+}
+
+function Onboarding() {
+  const [form, setForm]       = useState(INITIAL_FORM);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult]   = useState(null);
+  const [error, setError]     = useState(null);
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    setResult(null);
+    setError(null);
+
+    try {
+      const res = await fetch(`${API_BASE}/onboard`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": API_KEY,
+        },
+        body: JSON.stringify({
+          name:          form.name,
+          investor_type: form.investor_type,
+          annual_income: parseFloat(form.annual_income),
+          net_worth:     parseFloat(form.net_worth),
+          risk_profile:  form.risk_profile,
+        }),
+      });
+
+      if (!res.ok) throw new Error(`API returned ${res.status}`);
+      const data = await res.json();
+      setResult(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleReset() {
+    setResult(null);
+    setError(null);
+    setForm(INITIAL_FORM);
+  }
+
+  return (
+    <div className="page onboarding">
+      <div className="page-header">
+        <h1>Investor Onboarding</h1>
+        <p className="page-subtitle">
+          KYC verification and ELTIF 2.0 suitability assessment
+        </p>
+      </div>
+
+      <div className="onboarding-layout">
+        {/* ── Form ── */}
+        <form className="onboarding-form" onSubmit={handleSubmit}>
+          <div className="form-section-title">Personal Details</div>
+
+          <div className="form-field">
+            <label htmlFor="name">Full Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              placeholder="e.g. Sophie Hartmann"
+              value={form.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="investor_type">Investor Type</label>
+            <select
+              id="investor_type"
+              name="investor_type"
+              value={form.investor_type}
+              onChange={handleChange}
+            >
+              <option value="retail">Individual (Retail)</option>
+              <option value="professional">Institutional (Professional)</option>
+            </select>
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="risk_profile">Risk Profile</label>
+            <select
+              id="risk_profile"
+              name="risk_profile"
+              value={form.risk_profile}
+              onChange={handleChange}
+            >
+              <option value="conservative">Conservative</option>
+              <option value="moderate">Moderate</option>
+              <option value="aggressive">Aggressive</option>
+            </select>
+          </div>
+
+          <div className="form-section-title">Financial Information</div>
+
+          <div className="form-field">
+            <label htmlFor="annual_income">
+              Annual Income (EUR)
+            </label>
+            <input
+              id="annual_income"
+              name="annual_income"
+              type="number"
+              min="1"
+              placeholder="e.g. 120000"
+              value={form.annual_income}
+              onChange={handleChange}
+              required
+            />
+            <span className="field-hint">
+              ELTIF 2.0 threshold: ≥ €100,000
+            </span>
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="net_worth">
+              Net Worth (EUR, excl. primary residence)
+            </label>
+            <input
+              id="net_worth"
+              name="net_worth"
+              type="number"
+              min="1"
+              placeholder="e.g. 250000"
+              value={form.net_worth}
+              onChange={handleChange}
+              required
+            />
+            <span className="field-hint">
+              ELTIF 2.0 threshold: ≥ €100,000 · 10% cap if &lt; €500,000
+            </span>
+          </div>
+
+          <button className="btn-primary" type="submit" disabled={loading}>
+            {loading ? "Checking eligibility…" : "Submit for Assessment"}
+          </button>
+
+          {error && (
+            <p className="form-error">
+              ⚠ Could not reach the API: {error}
+            </p>
+          )}
+        </form>
+
+        {/* ── Result panel ── */}
+        <div className="result-column">
+          {!result && !loading && (
+            <div className="result-placeholder">
+              <div className="placeholder-icon">⚖</div>
+              <p className="placeholder-title">Eligibility Check</p>
+              <p className="placeholder-body">
+                Complete the form to run an ELTIF 2.0 suitability assessment.
+                Results appear here instantly.
+              </p>
+              <ul className="placeholder-rules">
+                <li>✓ Pass if annual income ≥ €100,000</li>
+                <li>✓ Pass if net worth ≥ €100,000</li>
+                <li>⚠ 10% cap if net worth &lt; €500,000</li>
+                <li>✗ Fail if neither threshold is met</li>
+              </ul>
+            </div>
+          )}
+
+          {loading && (
+            <div className="result-placeholder">
+              <div className="spinner" />
+              <p className="placeholder-body">Running eligibility check…</p>
+            </div>
+          )}
+
+          {result && <ResultPanel result={result} onReset={handleReset} />}
+        </div>
+      </div>
     </div>
   );
 }

@@ -81,14 +81,43 @@ function FundDiscovery() {
 
   return (
     <div className="page fund-discovery">
-      <div className="page-header">
-        <div>
-          <h1>Fund Discovery</h1>
-          <p className="page-subtitle">
-            ELTIF 2.0-eligible private market funds available through Privora
-          </p>
-        </div>
 
+      {/* Hero banner */}
+      <div className="fund-hero">
+        <div className="hero-body">
+          <p className="hero-eyebrow">ELTIF 2.0 Compliant · Privora Platform</p>
+          <h1 className="hero-title">
+            Private Markets,{" "}
+            <span className="hero-accent">Democratised</span>
+          </h1>
+          <p className="hero-subtitle">
+            Access institutional-grade infrastructure, private credit, real estate,
+            and private equity — structured under the EU&apos;s ELTIF 2.0 framework
+            for eligible retail investors.
+          </p>
+          <div className="hero-stats">
+            <div className="hero-stat">
+              <span className="hero-stat-value">5</span>
+              <span className="hero-stat-label">Funds Available</span>
+            </div>
+            <div className="hero-stat">
+              <span className="hero-stat-value">€1K</span>
+              <span className="hero-stat-label">Min. Investment</span>
+            </div>
+            <div className="hero-stat">
+              <span className="hero-stat-value">14.5%</span>
+              <span className="hero-stat-label">Max Target Return</span>
+            </div>
+            <div className="hero-stat">
+              <span className="hero-stat-value">ELTIF 2.0</span>
+              <span className="hero-stat-label">Regulatory Wrapper</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter bar */}
+      <div className="page-header">
         {!loading && !error && (
           <div className="filter-bar">
             <label htmlFor="asset-class-filter" className="filter-label">

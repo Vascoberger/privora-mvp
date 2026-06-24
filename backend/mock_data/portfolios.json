@@ -37,7 +37,7 @@
     "positions": [
       {
         "fund_id": "fund_004",
-        "fund_name": "Privora Growth Equity Fund II",
+        "fund_name": "Privora Tokenised PE Feeder Fund I",
         "amount_invested": 25000,
         "current_value": 27500,
         "status": "active"
@@ -75,7 +75,7 @@
       },
       {
         "fund_id": "fund_004",
-        "fund_name": "Privora Growth Equity Fund II",
+        "fund_name": "Privora Tokenised PE Feeder Fund I",
         "amount_invested": 25000,
         "current_value": 26200,
         "status": "active"

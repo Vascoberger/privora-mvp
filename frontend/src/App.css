@@ -13,20 +13,30 @@
   width: 100%;
 }
 
+/* Page fade-in on load */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.page {
+  animation: fadeInUp 0.4s ease both;
+}
+
 .page h1 {
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  color: #1a1a2e;
+  color: #f1f5f9;
 }
 
 .page p {
-  color: #6b7280;
+  color: #94a3b8;
 }
 
 /* ── Shared page subtitle ── */
 .page-subtitle {
-  color: #6b7280;
+  color: #94a3b8;
   margin-top: 0.25rem;
   font-size: 0.95rem;
   line-height: 1.5;
@@ -42,15 +52,15 @@
   gap: 0.75rem;
 }
 
-.state-message { font-size: 1rem; color: #6b7280; }
-.state-hint    { font-size: 0.85rem; color: #9ca3af; }
-.error-state .state-message { color: #dc2626; }
+.state-message { font-size: 1rem; color: #94a3b8; }
+.state-hint    { font-size: 0.85rem; color: #64748b; }
+.error-state .state-message { color: #ef4444; }
 
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid #e5e7eb;
-  border-top-color: #4f46e5;
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-top-color: #c9a84c;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }

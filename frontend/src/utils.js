@@ -5,7 +5,8 @@ export const ASSET_CLASS_COLOURS = {
   "Private Credit":  { bg: "#fef3c7", text: "#b45309" },
   "Real Estate":     { bg: "#ede9fe", text: "#6d28d9" },
   "Private Equity":  { bg: "#fce7f3", text: "#be185d" },
-  "Natural Capital": { bg: "#dcfce7", text: "#15803d" },
+  "Natural Capital":           { bg: "#dcfce7", text: "#15803d" },
+  "Tokenised Private Equity":  { bg: "#cffafe", text: "#0e7490" },
 };
 
 // Format a number as EUR with two decimal places (e.g. 10123.5 → "€10,123.50")

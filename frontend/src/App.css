@@ -27,16 +27,16 @@
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  color: #f1f5f9;
+  color: #1a1a2e;
 }
 
 .page p {
-  color: #94a3b8;
+  color: #475569;
 }
 
 /* ── Shared page subtitle ── */
 .page-subtitle {
-  color: #94a3b8;
+  color: #475569;
   margin-top: 0.25rem;
   font-size: 0.95rem;
   line-height: 1.5;
@@ -52,14 +52,14 @@
   gap: 0.75rem;
 }
 
-.state-message { font-size: 1rem; color: #94a3b8; }
-.state-hint    { font-size: 0.85rem; color: #64748b; }
+.state-message { font-size: 1rem; color: #475569; }
+.state-hint    { font-size: 0.85rem; color: #94a3b8; }
 .error-state .state-message { color: #ef4444; }
 
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(255, 255, 255, 0.08);
+  border: 3px solid rgba(30, 58, 95, 0.1);
   border-top-color: #c9a84c;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;

@@ -182,7 +182,7 @@ class SecondaryListing(BaseModel):
 
 
 class OnboardRequest(BaseModel):
-    """Investor details submitted for KYC and ELTIF 2.0 suitability assessment."""
+    """Investor details submitted for KYC and platform suitability assessment."""
     name: str = Field(..., description="Full legal name of the investor")
     investor_type: Literal["retail", "professional"] = Field(
         ..., description="Investor classification under MiFID II"
@@ -195,13 +195,13 @@ class OnboardRequest(BaseModel):
 
 
 class OnboardResponse(BaseModel):
-    """Result of the KYC and ELTIF 2.0 eligibility check."""
+    """Result of the KYC and platform suitability check."""
     status: Literal["pass", "fail"]
     eligibility: bool
     reason: str
     cap_applies: bool = Field(
         False,
-        description="True when the ELTIF 2.0 10% portfolio cap applies (net_worth < €500,000)"
+        description="True when the fund manager's distribution policy recommends a 10% allocation cap (net_worth < €500,000)"
     )
     investor_id: Optional[str] = Field(
         None, description="Unique investor ID assigned on successful onboarding"
@@ -221,16 +221,17 @@ def root():
 @app.post("/onboard", response_model=OnboardResponse, tags=["Onboarding"])
 def onboard_investor(request: OnboardRequest):
     """
-    Runs a mock KYC check and ELTIF 2.0 retail suitability assessment for a new investor.
+    Runs a mock KYC check and platform suitability assessment for a new investor.
 
-    ELTIF 2.0 (EU 2023/606) allows retail investors to access private market funds provided
-    they meet at least one of the following thresholds:
+    Privora's distribution policy criteria require that investors meet at least one
+    of the following thresholds before accessing private market funds on the platform:
       - Net worth ≥ €100,000 (excluding primary residence), OR
       - Annual gross income ≥ €100,000
 
-    Additional cap rule: if the investor qualifies but their net worth is below €500,000,
-    the regulation caps their ELTIF exposure at 10% of their financial portfolio. This is
-    flagged in the response so the wealth platform can enforce it in their UI.
+    Additional cap recommendation: if the investor meets the criteria but their net worth
+    is below €500,000, the fund manager's distribution policy recommends capping private
+    market exposure at 10% of the investor's financial portfolio. This is flagged in the
+    response so the wealth platform can enforce the recommended limit in their UI.
 
     Args:
         request: Investor profile including income, net worth, and risk tolerance.
@@ -247,26 +248,26 @@ def onboard_investor(request: OnboardRequest):
             status="fail",
             eligibility=False,
             reason=(
-                f"Does not meet ELTIF 2.0 retail eligibility thresholds. "
+                f"Does not meet Privora's platform suitability criteria. "
                 f"Annual income €{request.annual_income:,.0f} is below €100,000 "
                 f"and net worth €{request.net_worth:,.0f} is below €100,000. "
-                f"At least one threshold must be met."
+                f"At least one of these distribution policy criteria must be satisfied."
             ),
         )
 
-    # Investor qualifies — check whether the 10% portfolio cap applies
+    # Investor meets criteria — check whether the distribution policy cap applies
     cap_applies = request.net_worth < 500_000
 
     if cap_applies:
         reason = (
-            f"Eligible for ELTIF 2.0 access. "
-            f"Note: net worth €{request.net_worth:,.0f} is below €500,000, so the ELTIF 2.0 "
-            f"10% portfolio cap applies — maximum ELTIF exposure is "
-            f"€{request.net_worth * 0.10:,.0f}."
+            f"Meets Privora's platform suitability criteria. "
+            f"Note: net worth €{request.net_worth:,.0f} is below €500,000, so the fund manager's "
+            f"distribution policy recommends a 10% allocation cap — "
+            f"suggested maximum exposure is €{request.net_worth * 0.10:,.0f}."
         )
     else:
         reason = (
-            f"Fully eligible for ELTIF 2.0 access with no investment cap. "
+            f"Fully meets Privora's platform suitability criteria with no recommended cap. "
             f"Qualified via: "
             + (f"annual income €{request.annual_income:,.0f}" if income_qualifies else "")
             + (" and " if income_qualifies and wealth_qualifies else "")

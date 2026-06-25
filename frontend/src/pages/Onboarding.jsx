@@ -1,4 +1,4 @@
-// Onboarding page — KYC form + ELTIF 2.0 eligibility check via POST /onboard
+// Onboarding page — KYC form + platform suitability check via POST /onboard
 import { useState } from "react";
 import "./Onboarding.css";
 
@@ -13,7 +13,7 @@ const INITIAL_FORM = {
   risk_profile:  "conservative",
 };
 
-// Displays ELTIF eligibility result, investor ID, and cap warning if applicable
+// Displays platform suitability result, investor ID, and cap warning if applicable
 function ResultPanel({ result, onReset }) {
   const pass = result.status === "pass";
 
@@ -26,7 +26,7 @@ function ResultPanel({ result, onReset }) {
             {pass ? "Eligibility Confirmed" : "Not Eligible"}
           </h2>
           <p className="result-subtitle">
-            ELTIF 2.0 Suitability Assessment
+            Privora Platform Suitability Assessment
           </p>
         </div>
       </div>
@@ -45,12 +45,12 @@ function ResultPanel({ result, onReset }) {
 
           {result.cap_applies && (
             <div className="cap-warning">
-              <strong>10% Portfolio Cap Applies</strong>
+              <strong>10% Allocation Cap Recommended</strong>
               <p>
-                Under ELTIF 2.0 (EU 2023/606), investors with a net worth below
-                €500,000 may not allocate more than 10% of their financial
-                portfolio to ELTIF funds. Ensure each subscription stays within
-                this limit.
+                Per Privora's distribution policy, investors with a net worth below
+                €500,000 are recommended to limit private market exposure to 10% of
+                their financial portfolio. Ensure each subscription stays within
+                this guideline.
               </p>
             </div>
           )}
@@ -64,7 +64,7 @@ function ResultPanel({ result, onReset }) {
   );
 }
 
-// KYC form paired with a right-column ELTIF 2.0 eligibility result panel
+// KYC form paired with a right-column platform suitability result panel
 function Onboarding() {
   const [form, setForm]       = useState(INITIAL_FORM);
   const [loading, setLoading] = useState(false);
@@ -121,7 +121,7 @@ function Onboarding() {
       <div className="page-header">
         <h1>Investor Onboarding</h1>
         <p className="page-subtitle">
-          KYC verification and ELTIF 2.0 suitability assessment
+          KYC verification and platform suitability assessment
         </p>
       </div>
 
@@ -187,7 +187,7 @@ function Onboarding() {
               required
             />
             <span className="field-hint">
-              ELTIF 2.0 threshold: ≥ €100,000
+              Privora distribution policy minimum: ≥ €100,000
             </span>
           </div>
 
@@ -206,7 +206,7 @@ function Onboarding() {
               required
             />
             <span className="field-hint">
-              ELTIF 2.0 threshold: ≥ €100,000 · 10% cap if &lt; €500,000
+              Privora distribution policy minimum: ≥ €100,000 · 10% cap recommended if &lt; €500,000
             </span>
           </div>
 
@@ -228,14 +228,14 @@ function Onboarding() {
               <div className="placeholder-icon">⚖</div>
               <p className="placeholder-title">Eligibility Check</p>
               <p className="placeholder-body">
-                Complete the form to run an ELTIF 2.0 suitability assessment.
+                Complete the form to run a Privora platform suitability assessment.
                 Results appear here instantly.
               </p>
               <ul className="placeholder-rules">
                 <li>✓ Pass if annual income ≥ €100,000</li>
                 <li>✓ Pass if net worth ≥ €100,000</li>
-                <li>⚠ 10% cap if net worth &lt; €500,000</li>
-                <li>✗ Fail if neither threshold is met</li>
+                <li>⚠ 10% cap recommended if net worth &lt; €500,000</li>
+                <li>✗ Fail if neither distribution policy criterion is met</li>
               </ul>
             </div>
           )}

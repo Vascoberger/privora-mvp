@@ -11,7 +11,7 @@ Each of the five API endpoints represents a distinct layer of Privora's infrastr
 | Method | Endpoint | What it represents |
 |--------|----------|--------------------|
 | `GET` | `/funds` | The fund catalogue — Privora maintains a curated list of ELTIF 2.0-eligible private market funds (infrastructure, private credit, real estate, private equity, natural capital) that wealth platforms can surface to their clients |
-| `POST` | `/onboard` | KYC and suitability gating — before any client can invest, Privora runs an ELTIF 2.0 eligibility check against EU 2023/606 thresholds (net worth ≥ €100,000 or annual income ≥ €100,000); failed checks return a plain-language explanation |
+| `POST` | `/onboard` | KYC and suitability gating — before any client can invest, Privora runs a platform suitability check against its own distribution policy criteria (net worth ≥ €100,000 or annual income ≥ €100,000); failed checks return a plain-language explanation |
 | `POST` | `/invest` | Subscription order placement — Privora sits between the wealth platform and the fund administrator; this endpoint captures the management fee, placement fee, and expected yield at the moment of subscription |
 | `GET` | `/portfolio/{investor_id}` | Investor position tracking — shows current allocations, unrealised gains, and the interest yield earned on cash awaiting deployment, mapping to Privora's cash yield revenue lever |
 | `GET` | `/secondary-market` | Liquidity layer — ELTIF 2.0 introduced a mandatory secondary market; Privora charges a 1.5% commission on each secondary transaction, which this endpoint exposes as a live order book |
@@ -109,9 +109,13 @@ Implemented as a Starlette `BaseHTTPMiddleware` that intercepts every request be
 
 Visible in the Investment Flow page before the investor confirms a subscription. As soon as the user selects a fund and enters an amount, the calculator updates live — with no API call — showing the placement fee (one-time, at subscription), annual management fee (deducted from NAV), gross annual yield, and net estimated return after fees. Every line maps directly to one of Privora's four revenue levers, making the business model legible to the end client at the moment of decision.
 
-### 3. ELTIF 2.0 eligibility checker
+### 3. Platform suitability checker
 
-Built into the onboarding flow and enforced server-side in `POST /onboard`. The check applies EU 2023/606 thresholds: an investor passes if their net worth is ≥ €100,000 or their annual income is ≥ €100,000 (either condition is sufficient). If neither threshold is met, the response explains exactly why. If an investor passes but their net worth is below €500,000, the response flags that the ELTIF 2.0 10% portfolio cap applies — meaning no single ELTIF subscription can exceed 10% of their total financial portfolio — and the frontend displays this as a prominent warning alongside their issued investor ID.
+Built into the onboarding flow and enforced server-side in `POST /onboard`. The check applies Privora's own distribution policy criteria: an investor passes if their net worth is ≥ €100,000 or their annual income is ≥ €100,000 (either condition is sufficient). These thresholds reflect Privora's fund manager distribution policy, not a direct EU regulatory requirement. If neither criterion is met, the response explains exactly why. If an investor passes but their net worth is below €500,000, the response flags that Privora's distribution policy recommends a 10% allocation cap on private market exposure — and the frontend displays this as a prominent warning alongside their issued investor ID.
+
+### 4. Professional fintech visual design
+
+The frontend uses a light professional fintech aesthetic: a light grey-white (`#f4f6f9`) page background, white cards with subtle borders, deep navy (`#1e3a5f`) for the navbar, primary buttons, and the Fund Discovery hero banner, and gold (`#c9a84c`) as the accent colour for key numbers, highlights, and the brand logo. Teal (`#00b4d8`) marks cash and liquidity elements. The design deliberately contrasts the clean white content layer with the authoritative navy navigation, giving the product the visual register of an institutional wealth management platform rather than a consumer app.
 
 ---
 

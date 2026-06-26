@@ -10,7 +10,7 @@ Each of the five API endpoints represents a distinct layer of Privora's infrastr
 
 | Method | Endpoint | What it represents |
 |--------|----------|--------------------|
-| `GET` | `/funds` | The fund catalogue — Privora maintains a curated list of ELTIF 2.0-eligible private market funds (infrastructure, private credit, real estate, private equity, natural capital) that wealth platforms can surface to their clients |
+| `GET` | `/funds` | The fund catalogue — Privora maintains a curated list of ELTIF 2.0-eligible private market funds (infrastructure, private credit, real estate, tokenised private equity, natural capital) that wealth platforms can surface to their clients |
 | `POST` | `/onboard` | KYC and suitability gating — before any client can invest, Privora runs a platform suitability check against its own distribution policy criteria (net worth ≥ €100,000 or annual income ≥ €100,000); failed checks return a plain-language explanation |
 | `POST` | `/invest` | Subscription order placement — Privora sits between the wealth platform and the fund administrator; this endpoint captures the management fee, placement fee, and expected yield at the moment of subscription |
 | `GET` | `/portfolio/{investor_id}` | Investor position tracking — shows current allocations, unrealised gains, and the interest yield earned on cash awaiting deployment, mapping to Privora's cash yield revenue lever |
@@ -99,7 +99,7 @@ The frontend uses `pvr-key-alphawealth-001` by default. To test authentication, 
 
 ## Creativity features
 
-Three features go beyond the basic endpoint requirements:
+Four features go beyond the basic endpoint requirements:
 
 ### 1. API key authentication middleware
 

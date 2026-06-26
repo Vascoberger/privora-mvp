@@ -34,7 +34,7 @@ The backend must implement exactly these five endpoints:
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/funds` | Returns list of available ELTIF 2.0 private market funds |
-| POST | `/onboard` | Runs mock KYC + ELTIF 2.0 suitability check for an investor |
+| POST | `/onboard` | Runs mock KYC + platform suitability check against distribution policy criteria |
 | POST | `/invest` | Places a mock subscription order into a fund |
 | GET | `/portfolio/{investor_id}` | Returns investor's current allocations and positions |
 | GET | `/secondary-market` | Returns available positions listed for secondary sale |
@@ -53,7 +53,7 @@ The React frontend must implement these views:
 
 1. **Fund Discovery** — Displays available funds from `GET /funds`. Filterable by asset class. Shows fund name, asset class, minimum investment, expected return, annual fee, ELTIF eligibility badge.
 
-2. **Investor Onboarding** — Form collecting name, investor type, annual income, net worth, risk profile. Calls `POST /onboard`. Includes ELTIF 2.0 eligibility check (net worth ≥ €100,000 or annual income ≥ €100,000 per ELTIF 2.0 thresholds). Shows pass/fail result with reason.
+2. **Investor Onboarding** — Form collecting name, investor type, annual income, net worth, risk profile. Calls `POST /onboard`. Includes platform suitability check against Privora distribution policy criteria (net worth ≥ €100,000 or annual income ≥ €100,000). Shows pass/fail result with reason.
 
 3. **Investment Flow** — Fund selector + amount input. Shows fee breakdown before confirming (management fee, placement fee, estimated yield — the fee calculator). Calls `POST /invest` on confirmation.
 
@@ -65,7 +65,7 @@ The React frontend must implement these views:
 
 ## Creativity Features
 
-Three additional features must be implemented to go beyond the basic requirements:
+Four additional features must be implemented to go beyond the basic requirements:
 
 ### 1. API Key Authentication
 - Every API request must include a valid API key in the request header: `X-API-Key: <key>`
@@ -79,12 +79,20 @@ Three additional features must be implemented to go beyond the basic requirement
 - Outputs: management fee (%), placement fee (%), estimated annual yield, net return estimate
 - Maps directly to Privora's four revenue levers from the business plan
 
-### 3. ELTIF 2.0 Eligibility Checker
+### 3. Platform Suitability Checker
 - Part of the onboarding flow
-- Checks investor net worth (≥ €100,000) and/or annual income (≥ €100,000) against ELTIF 2.0 thresholds
+- Checks investor net worth (≥ €100,000) and/or annual income (≥ €100,000) against Privora's distribution policy criteria
 - If eligible: proceeds to full onboarding
-- If not eligible: returns a clear explanation of why and what threshold was not met
-- Partial investment cap logic: if eligible but net worth < €500,000, flag that the ELTIF 2.0 cap of 10% of financial portfolio applies
+- If not eligible: returns a clear explanation of why and which distribution policy criterion was not met
+- Allocation cap logic: if eligible but net worth < €500,000, flag that Privora's distribution policy recommends a 10% allocation cap on private market exposure
+
+### 4. Professional Fintech Visual Design
+- Light grey-white (`#f4f6f9`) page background with white cards and subtle borders
+- Deep navy (`#1e3a5f`) for the navbar, primary buttons, and the Fund Discovery hero banner
+- Gold (`#c9a84c`) accent for key numbers, stat highlights, and the brand logo
+- Teal (`#00b4d8`) for cash and liquidity elements
+- Fund Discovery hero section with "Private Markets, Democratised" headline and four live stats
+- Fade-in page animations and smooth hover transitions throughout
 
 ---
 
@@ -125,7 +133,7 @@ Build in this exact order to avoid blocking dependencies:
 1. Repo setup + this CLAUDE.md
 2. Backend skeleton (FastAPI app, folder structure, mock data files)
 3. `GET /funds` endpoint
-4. `POST /onboard` endpoint with ELTIF 2.0 eligibility logic
+4. `POST /onboard` endpoint with platform suitability logic
 5. `POST /invest` endpoint with fee calculation logic
 6. `GET /portfolio/{investor_id}` endpoint
 7. `GET /secondary-market` endpoint

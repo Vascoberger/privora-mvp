@@ -134,4 +134,3 @@ This approach was intentional: it demonstrates that Privora's API specification 
 **Institution:** Rotterdam School of Management (RSM), Erasmus University
 **Course:** FinTech (graduate elective)
 **Assignment:** Assignment 2 — MVP build
-**Submission type:** Individual submission
